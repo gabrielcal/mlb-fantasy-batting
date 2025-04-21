@@ -61,7 +61,14 @@ def get_batting_fantasy_stats(year):
     df['1B'] = df['H'] - df['2B'] - df['3B'] - df['HR']
     df['Total_Bases'] = df['1B'] + df['2B'] * 2 + df['3B'] * 3 + df['HR'] * 4
     df['Season'] = year
+
+    # Handle missing columns safely
+    for col in ['Team', 'Position']:
+        if col not in df.columns:
+            df[col] = 'Unknown'
+
     return df[['Name', 'Season', 'Team', 'Position', 'R', 'Total_Bases', 'RBI', 'BB', 'SO', 'SB']]
+
 
 @st.cache_data(show_spinner=True)
 def get_pitching_fantasy_stats(year):
