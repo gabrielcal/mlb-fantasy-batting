@@ -7,8 +7,6 @@ from datetime import datetime
 st.set_page_config(page_title="MLB Fantasy Dashboard", layout="wide")
 st.title("MLB Fantasy Points (Batters & Pitchers)")
 
-# ✅ Done! Your app now supports next 10 games lookup for all 30 MLB teams
-
 TEAM_LOGOS = {
     'ARI': 'https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/ari.png',
     'ATL': 'https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/atl.png',
@@ -61,14 +59,10 @@ def get_batting_fantasy_stats(year):
     df['1B'] = df['H'] - df['2B'] - df['3B'] - df['HR']
     df['Total_Bases'] = df['1B'] + df['2B'] * 2 + df['3B'] * 3 + df['HR'] * 4
     df['Season'] = year
-
-    # Handle missing columns safely
     for col in ['Team', 'Position']:
         if col not in df.columns:
             df[col] = 'Unknown'
-
     return df[['Name', 'Season', 'Team', 'Position', 'R', 'Total_Bases', 'RBI', 'BB', 'SO', 'SB']]
-
 
 @st.cache_data(show_spinner=True)
 def get_pitching_fantasy_stats(year):
@@ -81,6 +75,9 @@ def get_pitching_fantasy_stats(year):
         df['H'] - df['ER'] * 2 - df['BB'] - df['L'] * 2
     )
     df['Year'] = year
+    for col in ['Team', 'Position']:
+        if col not in df.columns:
+            df[col] = 'Unknown'
     return df[['Player', 'Year', 'Team', 'Position', 'IP','H','ER','BB','SO', 'W','L', 'SV', 'HLD', 'Fantasy_Points']]
 
 batting_data = pd.concat([get_batting_fantasy_stats(year) for year in selected_seasons])
