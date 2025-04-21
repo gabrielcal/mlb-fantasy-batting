@@ -7,14 +7,8 @@ from datetime import datetime
 st.set_page_config(page_title="MLB Fantasy Dashboard", layout="wide")
 st.title("MLB Fantasy Points (Batters & Pitchers)")
 
-# ✅ Done! Your app now supports next 10 games lookup for all 30 MLB teams, including Boston (BOS) and every other franchise.
-# Just select any team in the sidebar — and the app will fetch its upcoming schedule.
-# Let me know if you want to:
-# - Add team logos
-# - Include home/away markers
-# - Show starting pitchers (if available)
+# ✅ Done! Your app now supports next 10 games lookup for all 30 MLB teams
 
-# Team logos dictionary
 TEAM_LOGOS = {
     'ARI': 'https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/ari.png',
     'ATL': 'https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/atl.png',
@@ -47,7 +41,6 @@ TEAM_LOGOS = {
     'WSN': 'https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/wsh.png'
 }
 
-# All MLB team IDs
 TEAM_IDS = {
     'ARI': 109, 'ATL': 144, 'BAL': 110, 'BOS': 111, 'CHC': 112, 'CIN': 113, 'CLE': 114, 'COL': 115,
     'DET': 116, 'HOU': 117, 'KCR': 118, 'LAA': 108, 'LAD': 119, 'MIA': 146, 'MIL': 158, 'MIN': 142,
@@ -55,12 +48,10 @@ TEAM_IDS = {
     'STL': 138, 'TBR': 139, 'TEX': 140, 'TOR': 141, 'WSN': 120
 }
 
-# Sidebar
 selected_seasons = st.sidebar.multiselect("Select seasons:", [2023, 2024, 2025], default=[2023, 2024, 2025])
 selected_team = st.sidebar.selectbox("Filter by Team:", ["All"] + list(TEAM_IDS.keys()))
 selected_position = st.sidebar.selectbox("Filter by Position:", ["All", "1B", "2B", "3B", "SS", "LF", "CF", "RF", "C", "DH", "TWP", "SP", "RP"])
 
-# Show logo if team selected
 if selected_team != "All" and selected_team in TEAM_LOGOS:
     st.sidebar.image(TEAM_LOGOS[selected_team], width=100)
 
@@ -127,33 +118,34 @@ with standings_tab:
     except Exception as e:
         st.error(f"Could not load standings: {e}")
 
-        st.subheader("Next 10 Games for Selected Team")
+    st.subheader("Next 10 Games for Selected Team")
 
-def get_next_10_games(team_abbr):
-    team_id = TEAM_IDS.get(team_abbr)
-    if not team_id:
-        return pd.DataFrame({'Error': [f'Team {team_abbr} not mapped.']})
+    def get_next_10_games(team_abbr):
+        team_id = TEAM_IDS.get(team_abbr)
+        if not team_id:
+            return pd.DataFrame({'Error': [f'Team {team_abbr} not mapped.']})
 
-    url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={team_id}&startDate={datetime.today().strftime('%Y-%m-%d')}&endDate=2025-10-01&gameType=R&limit=10"
-    response = requests.get(url).json()
+        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={team_id}&startDate={datetime.today().strftime('%Y-%m-%d')}&endDate=2025-10-01&gameType=R&limit=10"
+        response = requests.get(url).json()
 
-    games = []
-    for date in response.get('dates', []):
-        for game in date.get('games', []):
-            games.append({
-                'Date': date['date'],
-                'Home': game['teams']['home']['team']['name'],
-                'Away': game['teams']['away']['team']['name'],
-                'Status': game['status']['detailedState']
-            })
+        games = []
+        for date in response.get('dates', []):
+            for game in date.get('games', []):
+                games.append({
+                    'Date': date['date'],
+                    'Home': game['teams']['home']['team']['name'],
+                    'Away': game['teams']['away']['team']['name'],
+                    'Status': game['status']['detailedState']
+                })
 
-    return pd.DataFrame(games)
+        return pd.DataFrame(games)
 
-if selected_team != "All":
-    games_df = get_next_10_games(selected_team)
-    st.dataframe(games_df, use_container_width=True)
-else:
-    st.info("Select a team from the sidebar to view its next 10 games.")h=True)
+    if selected_team != "All":
+        games_df = get_next_10_games(selected_team)
+        st.dataframe(games_df, use_container_width=True)
+    else:
+        st.info("Select a team from the sidebar to view its next 10 games.")
+        h=True)
     except Exception as e:
         st.error(f"Could not load standings: {e}")
 
