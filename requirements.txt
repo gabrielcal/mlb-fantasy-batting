@@ -1,3 +1,8 @@
 streamlit
 pandas
 pybaseball
+scikit-learn
+numpy
+tensorflow
+matplotlib
+requests
