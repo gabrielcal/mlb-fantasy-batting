@@ -145,7 +145,3 @@ with standings_tab:
         st.dataframe(games_df, use_container_width=True)
     else:
         st.info("Select a team from the sidebar to view its next 10 games.")
-h=True)
-    except Exception as e:
-        st.error(f"Could not load standings: {e}")
-
