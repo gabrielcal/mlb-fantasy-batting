@@ -127,33 +127,34 @@ with standings_tab:
     except Exception as e:
         st.error(f"Could not load standings: {e}")
 
-    st.subheader("Next 10 Games for Selected Team")
+        st.subheader("Next 10 Games for Selected Team")
 
-        def get_next_10_games(team_abbr):
-        team_id = TEAM_IDS.get(team_abbr)
-        if not team_id:
-            return pd.DataFrame({'Error': [f'Team {team_abbr} not mapped.']})
+def get_next_10_games(team_abbr):
+    team_id = TEAM_IDS.get(team_abbr)
+    if not team_id:
+        return pd.DataFrame({'Error': [f'Team {team_abbr} not mapped.']})
 
-        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={team_id}&startDate={datetime.today().strftime('%Y-%m-%d')}&endDate=2025-10-01&gameType=R&limit=10"
-        response = requests.get(url).json()
+    url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={team_id}&startDate={datetime.today().strftime('%Y-%m-%d')}&endDate=2025-10-01&gameType=R&limit=10"
+    response = requests.get(url).json()
 
-        games = []
-        for date in response.get('dates', []):
-            for game in date.get('games', []):
-                games.append({
-                    'Date': date['date'],
-                    'Home': game['teams']['home']['team']['name'],
-                    'Away': game['teams']['away']['team']['name'],
-                    'Status': game['status']['detailedState']
-                })
+    games = []
+    for date in response.get('dates', []):
+        for game in date.get('games', []):
+            games.append({
+                'Date': date['date'],
+                'Home': game['teams']['home']['team']['name'],
+                'Away': game['teams']['away']['team']['name'],
+                'Status': game['status']['detailedState']
+            })
 
-        return pd.DataFrame(games)
+    return pd.DataFrame(games)
 
-    if selected_team != "All":
-        games_df = get_next_10_games(selected_team)
-        st.dataframe(games_df, use_container_width=True)
-    else:
-        st.info("Select a team from the sidebar to view its next 10 games.")h=True)
+if selected_team != "All":
+    games_df = get_next_10_games(selected_team)
+    st.dataframe(games_df, use_container_width=True)
+else:
+    st.info("Select a team from the sidebar to view its next 10 games.")
+h=True)
     except Exception as e:
         st.error(f"Could not load standings: {e}")
 
